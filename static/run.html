@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gh0st_Writ3s</title>
+    <style>
+        /* Hacker-themed styles */
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 0;
+            background-color: black;
+            color: white;
+            background-image: url('https://wallpapercave.com/wp/wp9930730.png'); /* Hacker-themed background */
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            color: #00ff00; /* Hacker green */
+        }
+
+        #editor {
+            width: 90%;
+            height: 750px;
+            margin: 20px auto;
+            border: 1px solid #00ff00; /* Hacker green border */
+            padding: 10px;
+            font-size: 16px;
+            color: #00ff00;
+            background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent black */
+            overflow-y: auto;
+            outline: none;
+        }
+
+        #editor:focus {
+            border-color: #ffffff; /* White border on focus */
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #00ff00;
+        }
+    </style>
+</head>
+<body>
+    <h1>Gh0st_Writ3s</h1>
+    <div id="editor" contenteditable="true" placeholder="Start typing..."></div>
+
+    <footer>
+    <span style="color: #00ff00;">Crafted with 💚 by sim0n_ril3y</span>
+</footer>
+
+
+    <script>
+        // Replace with your ngrok WebSocket URL
+        const socket = new WebSocket("wss://9d1e-49-36-181-131.ngrok-free.app/ws");
+
+        // Reference to the editor
+        const editor = document.getElementById("editor");
+
+        // Track if the update came from the server to prevent echoing
+        let isFromServer = false;
+
+        socket.onopen = () => {
+            console.log("WebSocket connected");
+        };
+
+        socket.onmessage = (event) => {
+            console.log("Message received:", event.data);
+            isFromServer = true; // Mark as server update
+            editor.innerHTML = event.data; // Update the editor content
+            isFromServer = false;
+        };
+
+        socket.onerror = (error) => {
+            console.error("WebSocket error:", error);
+        };
+
+        socket.onclose = () => {
+            console.log("WebSocket connection closed");
+        };
+
+        // Send updates to the server on input change
+        editor.addEventListener("input", () => {
+            if (!isFromServer) {
+                const content = editor.innerHTML;
+                socket.send(content); // Send the updated content to the server
+            }
+        });
+    </script>
+</body>
+</html>
